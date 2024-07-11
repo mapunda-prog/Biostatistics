@@ -1,0 +1,100 @@
+---
+title: "Tito_data"
+author: "Lawrence_Mapunda"
+date: "2024-06-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+load the packages and data for survival analysis
+```{r}
+library(survival) # for survival analysis
+library(survminer) # for plotting survival curves
+library(gtsummary)
+library(rio)
+cleaned_data <- import("cleaned_data.csv")
+```
+
+Here is the survival analysis analysis where survival object is created first
+
+```{r}
+km_Fisher <- survfit(Surv(time, rebound_occurred ) ~ 1, data = cleaned_data)
+data_subset <- cleaned_data %>%
+  filter(!is.na(time) & !is.na(rebound_occurred))
+ggsurvplot(km_Fisher, data = data_subset, risk.table = TRUE, 
+           surv.median.line = "hv", censor = FALSE)
+```
+
+## Including Plots
+
+Cox regression analysis to get factors associated with rebound
+
+```{r}
+cxmod_sex <- coxph(Surv(time, rebound_occurred) ~ sex, data = cleaned_data)
+summary(cxmod_sex)
+cxmod_Age_cat <- coxph(Surv(time, rebound_occurred) ~ age_cat, data = cleaned_data)
+summary(cxmod_Age_cat)
+
+Cxmod_residence_lvl <- coxph(Surv(time, rebound_occurred) ~ residence_lvl, data = cleaned_data)
+summary(Cxmod_residence_lvl)
+
+Cxmod_HF_distance_category <- coxph(Surv(time, rebound_occurred) ~ HF_distance_category, data = cleaned_data)
+summary(Cxmod_HF_distance_category)
+
+Cxmod_art_regimen_line <- coxph(Surv(time, rebound_occurred) ~ art_regimen, 
+                                  data = cleaned_data)
+summary(Cxmod_art_regimen_line)
+
+Cxmod_duration_on_art_months <- coxph(Surv(time, rebound_occurred) ~ duration_on_art_months, 
+                                   data = cleaned_data)
+summary(Cxmod_duration_on_art_months)
+
+Cxmod_client_category <- coxph(Surv(time, rebound_occurred) ~ client_category, 
+                                   data = cleaned_data)
+summary(Cxmod_client_category)
+
+Cxmod_llv_cat_baseline <- coxph(Surv(time, rebound_occurred) ~ llv_cat_baseline, 
+                                   data = cleaned_data)
+summary(Cxmod_llv_cat_baseline)
+
+Cxmod_type_of_health_facility <- coxph(Surv(time, rebound_occurred) ~ type_of_health_facility, 
+                                   data = cleaned_data) 
+summary(Cxmod_type_of_health_facility)
+
+Cxmod_llv_art_refill <- coxph(Surv(time, rebound_occurred) ~ art_dispensing_days, 
+                                   data = cleaned_data)
+summary(Cxmod_llv_art_refill)
+
+
+Cxmod_staffing <- coxph(Surv(time, rebound_occurred) ~ staff_cat, 
+                                   data = cleaned_data)
+summary(Cxmod_staffing)
+
+
+Cxmod_cd4 <- coxph(Surv(time, rebound_occurred) ~ cd4_category, 
+                                   data = cleaned_data)
+summary(Cxmod_cd4)
+
+Cxmod_TB_therapy <- coxph(Surv(time, rebound_occurred) ~ tb_preventive_therapy, 
+                                   data = cleaned_data)
+summary(Cxmod_TB_therapy)
+
+cxmod_all <- coxph(Surv(time, rebound_occurred) ~ sex + age_cat + residence_lvl + HF_distance_category + art_regimen + duration_cat + client_category + llv_cat_baseline + type_of_health_facility + art_dispensing_days + staff_cat + cd4_category + tb_preventive_therapy + Pt_volume_cat, data = cleaned_data)
+
+
+summary(cxmod_all)
+
+cxmod_adj <- coxph(Surv(time, rebound_occurred) ~ sex + age_cat + residence_lvl + HF_distance_category + duration_cat + client_category + llv_cat_baseline, data = cleaned_data)
+
+
+summary(cxmod_adj)
+
+```
+
+

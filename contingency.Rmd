@@ -1,0 +1,71 @@
+---
+title: "Contingency results"
+author: "Lawrence"
+date: "2024-06-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Importing needed packages
+```{r}
+library(tidyverse) # for data manipulation
+library(survival) # for survival analysis
+library(survminer) # for plotting survival curves
+library(janitor)  # for clean_names function
+library(rmarkdown) # document compilation
+```
+
+
+```{r}
+library(rio)
+cleaned_data <- import("cleaned_data.csv")
+```
+
+## Cleaning data to add columns
+
+
+
+```{r}
+
+Weight_breaks <- c(0, 45, 68, 90, Inf)  # Define the breaks for your categories
+Weight_labels <- c("Less than 45 kgs", "45-68 kgs", "69-90 kgs", "More than 90 kgs")  # Define the labels for your categories
+
+cleaned_data$weight_cat <- cut(cleaned_data$weight_kg, breaks = Weight_breaks, 
+                                         labels = Weight_labels, 
+                              include.lowest = TRUE, right = FALSE)
+
+pt_volume_breaks <- c(0, 199, 399, 999, Inf)  # Define the breaks for your categories
+pt_volume_labels <- c("1-199", "200-399", "400-999", "More than 999")  # Define the labels for your categories
+
+cleaned_data$Pt_volume_cat <- cut(cleaned_data$facility_patient_volume, breaks = pt_volume_breaks, 
+                                         labels = pt_volume_labels, 
+                              include.lowest = TRUE)
+
+
+staff_breaks <- c(0, 5, 9, Inf)  # Define the breaks for your categories
+staff_labels <- c("0-4", "5-9", "10 and above")  # Define the labels for your categories
+
+cleaned_data$staff_cat <- cut(cleaned_data$facility_staffing, breaks = staff_breaks, 
+                                         labels = staff_labels, 
+                              include.lowest = TRUE)
+
+
+durarion_breaks <- c(0, 12, 48, 96, Inf)  # Define the breaks for your categories
+duration_labels <- c("less than 1 year", "1-4 years", "5-8 years", "More than 8 years")  # Define the labels for your categories
+
+cleaned_data$duration_cat <- cut(cleaned_data$duration_on_art_months, breaks = durarion_breaks, 
+                                         labels = duration_labels, 
+                              include.lowest = TRUE)
+
+
+
+
+
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
